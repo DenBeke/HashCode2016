@@ -6,17 +6,32 @@ class Drone:
 		self.y = y
 		self.counter = 0
 
+	def __str__(self):
+		return str(x) + " " + str(y)
+
 class Warehouse:
 	def __init__(self, x, y, items):
 		self.x = x
 		self.y = y
 		self.items = items
 
+	def __str__(self):
+		out = str(x) + " " + str(y) + " " + "items:"
+		for item in items:
+			out += " " + str(item)
+		return out
+
 class Order:
 	def __init__(self, x, y, items):
 		self.x = x
 		self.y = y
 		self.items = items
+
+	def __str__(self):
+		out = str(x) + " " + str(y) + " " +  "items:"
+		for item in items:
+			out += " " + str(item)
+		return out
 
 
 height, width, numDrones, numTurns, maxLoad = map(int, sys.stdin.readline().split())
@@ -63,6 +78,12 @@ def findImminentDrone():
 
 
 #for order in orders:
-	
-print(findImminentDrone())
 
+
+
+for productType in productTypes:
+	print(productType)
+for warehouse in warehouses:
+	print(warehouse)
+for order in orders:
+	print(order)
