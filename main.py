@@ -20,6 +20,8 @@ class Drone:
 		self.currentPayload = 0
 		self.numProductTypes = numProductTypes
 		self.items = [0 for _ in range(numProductTypes)]
+		self.prevCommands = []
+		
 
 	def addPayload(self, load):
 		self.currentPayload += load
@@ -87,12 +89,13 @@ class Order:
 
 
 	def getNextItem(self):
-		if self.currentItem == len(self.items):
+		if self.currentItem >= len(self.items):
 			return None
 		return self.items[self.currentItem]
 
 	def removeNextItem(self):
-		self.currentItem += 1
+		#self.currentItem += 1
+		self.items.pop(self.currentItem)
 
 	def hasItems(self):
 		return self.currentItem < len(self.items)
@@ -115,8 +118,9 @@ def findImminentDrone():
 def processOrders(orders):
 	for i in range(len(orders)):
 		order = orders[i]
-		drone = findImminentDrone()
+
 		while order.hasItems() :
+			drone = findImminentDrone()
 			item = order.getNextItem()
 			itemNo = 0
 			while drone.payloadLeft() >= productTypes[item]:
@@ -125,6 +129,14 @@ def processOrders(orders):
 				warehouse = findWarehouse(item, drone, order)
 				drone.moveTo(warehouse.x, warehouse.y)
 				drone.load(warehouse.ID, item, 1, productTypes[item])
+
+				#SAME WAREHOUSE
+				for item in range(len(warehouse.items)):
+					if warehouse.items[item] > 0 and item in order.items and drone.payloadLeft() >= productTypes[item]:
+						thisItem = 1
+						drone.load(warehouse.ID, item, 1, productTypes[item])
+						order.items.remove(item)
+						warehouse.items[item] -= 1
 				item = order.getNextItem()
 				itemNo += 1
 				if item == None:
