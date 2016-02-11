@@ -1,10 +1,14 @@
 import sys
+import math
+import os
 
 commandList = []
 
 def print_err(*args):
 	sys.stderr.write(' '.join(map(str,args)) + '\n')
 
+def euclid(x1, y1, x2, y2):
+	return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 
 class Drone:
@@ -24,15 +28,27 @@ class Drone:
 		return maxLoad - self.currentPayload
 
 	def moveTo(self, x, y):
+		self.counter += math.ceil(euclid(x, y, self.x, self.y))
+		if self.counter >= numTurns:
+			exit(0)
 		self.x = x
 		self.y = y
 
+
 	def load(self, warehouseNo, typeName, itemNo, payload):
+		self.counter += 1
+		if self.counter >= numTurns:
+			exit(0)
 		self.addPayload(payload)
 		self.items[typeName] += itemNo
+
+		
 		print(str(self.ID) + " L " + str(warehouseNo) + " " + str(typeName) + " " + str(itemNo))
 
 	def deliver(self, orderNo):
+		self.counter += 1
+		if self.counter >= numTurns:
+			exit(0)
 		for i in range(len(self.items)):
 			if self.items[i] > 0:
 				print_err("output")
