@@ -1,14 +1,21 @@
 import sys
 
+commandList = []
+
 def print_err(*args):
 	sys.stderr.write(' '.join(map(str,args)) + '\n')
 
+
+
 class Drone:
-	def __init__(self, x, y):
+	def __init__(self, x, y, ID, numProductTypes):
 		self.x = x
 		self.y = y
+		self.ID = ID
 		self.counter = 0
 		self.currentPayload = 0
+		self.numProductTypes = numProductTypes
+		self.items = [0 for _ in range(numProductTypes)]
 
 	def addPayload(self, load):
 		self.currentPayload += load
@@ -20,20 +27,28 @@ class Drone:
 		self.x = x
 		self.y = y
 
-	def load(self, item):
-		pass
+	def load(self, warehouseNo, typeName, itemNo, payload):
+		self.addPayload(payload)
+		self.items[typeName] += itemNo
+		print(str(self.ID) + " L " + str(warehouseNo) + " " + str(typeName) + " " + str(itemNo))
 
-	def deliver(self):
-		pass
+	def deliver(self, orderNo):
+		for i in range(len(self.items)):
+			if self.items[i] > 0:
+				print_err("output")
+				print(str(self.ID) + " D " + str(orderNo) + " " + str(i) + " " + str(self.items[i]))
+		self.currentPayload = 0
+		self.items = [0 for _ in range(self.numProductTypes)]
 
 	def __str__(self):
 		return str(self.x) + " " + str(self.y)
 
 class Warehouse:
-	def __init__(self, x, y, items):
+	def __init__(self, x, y, items, ID):
 		self.x = x
 		self.y = y
 		self.items = items
+		self.ID = ID
 
 	def __str__(self):
 		out = "  " + str(self.x) + " " + str(self.y) + " " + "items:"
@@ -70,27 +85,32 @@ def findWarehouse(typeName):
 	for warehouse in warehouses:
 		if warehouse.items[typeName] > 0:
 			warehouse.items[typeName] -= 1
-			return [warehouse.x, warehouse.y]
+			return warehouse
 
 def findImminentDrone():
 	return min(drones, key = lambda drone: drone.counter)
 
 
 def processOrders(orders):
-	for order in orders:
-	    drone = findImminentDrone()
-	    while order.hasItems() :
+	for i in range(len(orders)):
+		order = orders[i]
+		drone = findImminentDrone()
+		while order.hasItems() :
 			item = order.getNextItem()
+			itemNo = 0
 			while drone.payloadLeft() >= productTypes[item]:
+				print_err("payload")
 				order.removeNextItem()
 				warehouse = findWarehouse(item)
-				drone.moveTo(warehouse[0], warehouse[1])
-				drone.load(item)
+				drone.moveTo(warehouse.x, warehouse.y)
+				drone.load(warehouse.ID, item, 1, productTypes[item])
 				item = order.getNextItem()
+				itemNo += 1
 				if item == None:
+					print_err("break")
 					break
 			drone.moveTo(order.x, order.y)
-			drone.deliver()
+			drone.deliver(i)
 
 
 
@@ -112,7 +132,7 @@ warehouses = []
 for i in range(numWarehouses):
 	x, y = map(int, sys.stdin.readline().split())
 	items = map(int, sys.stdin.readline().split())
-	warehouses.append(Warehouse(x, y, items))
+	warehouses.append(Warehouse(x, y, items, i))
 
 
 numOrders = int(sys.stdin.readline())
@@ -143,7 +163,7 @@ for order in orders:
 print_err("--------------------------\n")
 
 # Init drones
-drones = [Drone(0,0) for _ in range(numDrones)]
+drones = [Drone(0,0, i, numProductsTypes) for i in range(numDrones)]
 
 processOrders(orders)
 
