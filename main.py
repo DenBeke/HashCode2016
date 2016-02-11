@@ -1,9 +1,10 @@
 import sys
 
 class Drone:
-	def __init(self, x, y):
+	def __init__(self, x, y):
 		self.x = x
 		self.y = y
+		self.counter = 0
 
 class Warehouse:
 	def __init__(self, x, y, items):
@@ -52,3 +53,16 @@ print(height, width, numDrones, numTurns, maxLoad)
 print(productTypes)
 print(warehouses)
 print(orders)
+
+# Init drones
+drones = [Drone(0,0) for _ in range(numDrones)]
+
+
+def findImminentDrone():
+	return min(drones, key = lambda drone: drone.counter)
+
+
+#for order in orders:
+	
+print(findImminentDrone())
+
