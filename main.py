@@ -43,7 +43,7 @@ class Drone:
 		self.items[typeName] += itemNo
 
 		
-		print(str(self.ID) + " L " + str(warehouseNo) + " " + str(typeName) + " " + str(itemNo))
+		commandList.append(str(self.ID) + " L " + str(warehouseNo) + " " + str(typeName) + " " + str(itemNo))
 
 	def deliver(self, orderNo):
 		self.counter += 1
@@ -52,7 +52,7 @@ class Drone:
 		for i in range(len(self.items)):
 			if self.items[i] > 0:
 				print_err("output")
-				print(str(self.ID) + " D " + str(orderNo) + " " + str(i) + " " + str(self.items[i]))
+				commandList.append(str(self.ID) + " D " + str(orderNo) + " " + str(i) + " " + str(self.items[i]))
 		self.currentPayload = 0
 		self.items = [0 for _ in range(self.numProductTypes)]
 
@@ -97,11 +97,16 @@ class Order:
 	def hasItems(self):
 		return self.currentItem < len(self.items)
 
-def findWarehouse(typeName):
-	for warehouse in warehouses:
-		if warehouse.items[typeName] > 0:
-			warehouse.items[typeName] -= 1
-			return warehouse
+def findWarehouse(typeName, drone, order):
+	availableWarehouses = filter(lambda warehouse: warehouse.items[typeName] > 0, warehouses)
+	warehouse = min(availableWarehouses, key=lambda warehouse: euclid(drone.x, drone.y, warehouse.x, warehouse.y) + euclid(warehouse.x, warehouse.y, order.x, order.y))
+	warehouse.items[typeName] -= 1
+	return warehouse
+
+	#for warehouse in warehouses:
+	#	if warehouse.items[typeName] > 0:
+	#		warehouse.items[typeName] -= 1
+	#		return warehouse
 
 def findImminentDrone():
 	return min(drones, key = lambda drone: drone.counter)
@@ -117,7 +122,7 @@ def processOrders(orders):
 			while drone.payloadLeft() >= productTypes[item]:
 				print_err("payload")
 				order.removeNextItem()
-				warehouse = findWarehouse(item)
+				warehouse = findWarehouse(item, drone, order)
 				drone.moveTo(warehouse.x, warehouse.y)
 				drone.load(warehouse.ID, item, 1, productTypes[item])
 				item = order.getNextItem()
@@ -182,4 +187,8 @@ print_err("--------------------------\n")
 drones = [Drone(0,0, i, numProductsTypes) for i in range(numDrones)]
 
 processOrders(orders)
+
+print(len(commandList))
+for line in commandList:
+	print(line)
 
