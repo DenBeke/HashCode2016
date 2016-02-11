@@ -7,7 +7,7 @@ class Drone:
 		self.counter = 0
 
 	def __str__(self):
-		return str(x) + " " + str(y)
+		return str(self.x) + " " + str(self.y)
 
 class Warehouse:
 	def __init__(self, x, y, items):
@@ -16,8 +16,8 @@ class Warehouse:
 		self.items = items
 
 	def __str__(self):
-		out = str(x) + " " + str(y) + " " + "items:"
-		for item in items:
+		out = "  " + str(self.x) + " " + str(self.y) + " " + "items:"
+		for item in self.items:
 			out += " " + str(item)
 		return out
 
@@ -28,14 +28,14 @@ class Order:
 		self.items = items
 
 	def __str__(self):
-		out = str(x) + " " + str(y) + " " +  "items:"
-		for item in items:
+		out = "  " + str(self.x) + " " + str(self.y) + " " +  "items:"
+		for item in self.items:
 			out += " " + str(item)
 		return out
 
 
 height, width, numDrones, numTurns, maxLoad = map(int, sys.stdin.readline().split())
-numProductsTypes = sys.stdin.readline()
+numProductsTypes = int(sys.stdin.readline())
 
 productTypes = []
 
@@ -64,10 +64,22 @@ for i in range(numOrders):
 	orders.append(Order(x, y, items))
 
 
-print(height, width, numDrones, numTurns, maxLoad)
-print(productTypes)
-print(warehouses)
-print(orders)
+print("-----------INPUT----------")
+print("H:", height, "W:", width)
+print("Drones:", numDrones, "Turns:", numTurns, "Max load:", maxLoad)
+
+
+print("Product types:", productTypes)
+
+print("Warehouses:")
+for warehouse in warehouses:
+	print(warehouse)
+
+print("Orders:")
+for order in orders:
+	print(order)
+
+print("--------------------------\n")
 
 # Init drones
 drones = [Drone(0,0) for _ in range(numDrones)]
@@ -75,15 +87,3 @@ drones = [Drone(0,0) for _ in range(numDrones)]
 
 def findImminentDrone():
 	return min(drones, key = lambda drone: drone.counter)
-
-
-#for order in orders:
-
-
-
-for productType in productTypes:
-	print(productType)
-for warehouse in warehouses:
-	print(warehouse)
-for order in orders:
-	print(order)
