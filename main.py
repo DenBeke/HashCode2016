@@ -1,5 +1,8 @@
 import sys
 
+def print_err(*args):
+	sys.stderr.write(' '.join(map(str,args)) + '\n')
+
 class Drone:
 	def __init__(self, x, y):
 		self.x = x
@@ -64,22 +67,22 @@ for i in range(numOrders):
 	orders.append(Order(x, y, items))
 
 
-print("-----------INPUT----------")
-print("H:", height, "W:", width)
-print("Drones:", numDrones, "Turns:", numTurns, "Max load:", maxLoad)
+print_err("-----------INPUT----------")
+print_err("H:", height, "W:", width)
+print_err("Drones:", numDrones, "Turns:", numTurns, "Max load:", maxLoad)
 
 
-print("Product types:", productTypes)
+print_err("Product types:", productTypes)
 
-print("Warehouses:")
+print_err("Warehouses:")
 for warehouse in warehouses:
-	print(warehouse)
+	print_err(warehouse)
 
-print("Orders:")
+print_err("Orders:")
 for order in orders:
-	print(order)
+	print_err(order)
 
-print("--------------------------\n")
+print_err("--------------------------\n")
 
 # Init drones
 drones = [Drone(0,0) for _ in range(numDrones)]
